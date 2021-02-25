@@ -1,32 +1,20 @@
 <script>
-    import Column from './column.svelte'
-    import DragTarget from './dragTarget.svelte'
-    import { board, changePosition} from '../store/board.store'
-    let dragEvent = {
-        index : undefined,
-        direction: undefined
-    }
-    function overHandler(event){
-        dragEvent = {
-            index:event.detail.id,
-            direction:event.detail.direction
-        }
-    }
-    function dropHandler(e){
-        changePosition(e.detail, dragEvent.index)
-        dragEvent = {
-            index:undefined,
-            direction:undefined
-        }
-    }
+  import { flip } from 'svelte/animate'
+  import Column from './column.svelte'
+  import { board } from '../store/board.store'
+  import {addCard} from '../actions/card'
+
 </script>
 
-{#each $board as column, index (column.id) }
-    <DragTarget isVertical side="left" {index} {dragEvent}/>
-    <Column on:dropped={dropHandler} on:over={overHandler} {index} id={column.id} title={column.title}></Column>
-    <DragTarget isVertical side="right" {index} {dragEvent}/>
+{#each $board as column, index (column.id)}
+  <div animate:flip={{ duration: 200 }}>
+    <Column
+      {index}
+      id={column.id}
+      title={column.title}
+      colour={column.bgColor}
+      cards={column.cards}
+      on:cardAdded={addCard}
+    />
+  </div>
 {/each}
-
-<style>
-
-</style>
